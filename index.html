@@ -1,1 +1,298 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spelling Practice</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f4f6f8;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    margin: 0;
+  }
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    padding: 30px;
+    width: 100%;
+    max-width: 480px;
+  }
+  h1 {
+    font-size: 22px;
+    margin-top: 0;
+    color: #222;
+    text-align: center;
+  }
+  textarea {
+    width: 100%;
+    height: 90px;
+    padding: 10px;
+    font-size: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    resize: vertical;
+    font-family: inherit;
+  }
+  button {
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 15px;
+    font-weight: 600;
+    transition: background 0.2s;
+  }
+  .primary {
+    background: #2d6cdf;
+    color: #fff;
+    width: 100%;
+    margin-top: 12px;
+    padding: 12px;
+  }
+  .primary:hover { background: #1f56b8; }
+  .secondary {
+    background: #eef1f5;
+    color: #333;
+  }
+  .secondary:hover { background: #dde2e8; }
+  #practiceArea { display: none; margin-top: 10px; }
+  .sound-row {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+  }
+  .sound-btn {
+    background: #2d6cdf;
+    color: #fff;
+    font-size: 26px;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .sound-btn:hover { background: #1f56b8; }
+  #wordInput {
+    width: 100%;
+    padding: 12px;
+    font-size: 18px;
+    text-align: center;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    letter-spacing: 1px;
+  }
+  #wordInput:focus { outline: none; border-color: #2d6cdf; }
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .btn-row button { flex: 1; }
+  #feedback {
+    text-align: center;
+    font-weight: 600;
+    margin-top: 14px;
+    min-height: 22px;
+    font-size: 15px;
+  }
+  .correct { color: #1a8f3c; }
+  .incorrect { color: #d93025; }
+  #progress {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 14px;
+    color: #555;
+  }
+  #summary {
+    display: none;
+    margin-top: 10px;
+  }
+  #summary ul {
+    padding-left: 20px;
+    font-size: 14px;
+    color: #444;
+  }
+  .hint {
+    font-size: 13px;
+    color: #888;
+    text-align: center;
+    margin-top: 6px;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h1>🔤 Spelling Practice</h1>
+
+  <div id="setupArea">
+    <p style="font-size:14px; color:#666;">Paste your words below, separated by commas:</p>
+    <textarea id="wordListInput" placeholder="variety, nervous, inequality, January, excitement"></textarea>
+    <button class="primary" onclick="startPractice()">Start Practice</button>
+  </div>
+
+  <div id="practiceArea">
+    <div class="sound-row">
+      <button class="sound-btn" onclick="speakCurrentWord()">🔊</button>
+    </div>
+    <input type="text" id="wordInput" placeholder="Type the word here" autocomplete="off" spellcheck="false">
+    <div class="btn-row">
+      <button class="secondary" onclick="speakCurrentWord()">Replay sound</button>
+      <button class="primary" onclick="checkSpelling()">Check</button>
+    </div>
+    <div id="feedback"></div>
+    <div id="progress"></div>
+    <div class="hint">Press Enter to submit • upper/lower case doesn't matter</div>
+    <button class="secondary" style="width:100%; margin-top:16px;" onclick="restart()">Restart</button>
+
+    <div id="summary">
+      <h3 style="font-size:16px;">🎉 All done!</h3>
+      <p id="summaryText" style="font-size:14px;"></p>
+      <ul id="mistakeList"></ul>
+    </div>
+  </div>
+</div>
+
+<script>
+  let queue = [];
+  let totalWords = 0;
+  let correctCount = 0;
+  let mistakeCounts = {};
+  let currentWord = "";
+
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function startPractice() {
+    const raw = document.getElementById('wordListInput').value;
+    const words = raw.split(',')
+      .map(w => w.trim())
+      .filter(w => w.length > 0);
+
+    if (words.length === 0) {
+      alert("Please enter at least one word.");
+      return;
+    }
+
+    queue = shuffle([...words]);
+    totalWords = words.length;
+    correctCount = 0;
+    mistakeCounts = {};
+    words.forEach(w => mistakeCounts[w.toLowerCase()] = 0);
+
+    document.getElementById('setupArea').style.display = 'none';
+    document.getElementById('practiceArea').style.display = 'block';
+    document.getElementById('summary').style.display = 'none';
+
+    nextWord();
+  }
+
+  function nextWord() {
+    if (queue.length === 0) {
+      finishPractice();
+      return;
+    }
+    currentWord = queue[0];
+    document.getElementById('wordInput').value = "";
+    document.getElementById('feedback').textContent = "";
+    updateProgress();
+    document.getElementById('wordInput').focus();
+    speakCurrentWord();
+  }
+
+  function speakCurrentWord() {
+    if (!currentWord) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(currentWord);
+    utterance.rate = 0.9;
+    window.speechSynthesis.speak(utterance);
+  }
+
+function checkSpelling() {
+    const typed = document.getElementById('wordInput').value.trim().toLowerCase();
+    const correct = currentWord.trim().toLowerCase();
+    const feedback = document.getElementById('feedback');
+
+    if (typed === "") return;
+
+    if (typed === correct) {
+      feedback.textContent = "✅ Correct!";
+      feedback.className = "correct";
+      queue.shift();
+      correctCount++;
+      setTimeout(nextWord, 700);
+    } else {
+      feedback.textContent = `❌ Not quite — the correct spelling is "${currentWord}"`;
+      feedback.className = "incorrect";
+      mistakeCounts[correct] = (mistakeCounts[correct] || 0) + 1;
+
+      // move the word to a random spot further in the queue (not immediately next)
+      const wrongWord = queue.shift();
+      const insertPos = queue.length === 0 ? 0 : Math.floor(Math.random() * queue.length) + 1;
+      queue.splice(insertPos, 0, wrongWord);
+
+      setTimeout(nextWord, 1500);
+    }
+}
+
+  function updateProgress() {
+    document.getElementById('progress').textContent =
+      `Correct: ${correctCount} / ${totalWords}   •   Remaining: ${queue.length}`;
+  }
+
+  function finishPractice() {
+    document.getElementById('progress').textContent = `Correct: ${correctCount} / ${totalWords}`;
+    document.getElementById('wordInput').style.display = 'none';
+    document.querySelector('.sound-row').style.display = 'none';
+    document.querySelector('.btn-row').style.display = 'none';
+    document.querySelector('.hint').style.display = 'none';
+    document.getElementById('feedback').textContent = "";
+
+    const summary = document.getElementById('summary');
+    summary.style.display = 'block';
+
+    const missed = Object.entries(mistakeCounts).filter(([w, c]) => c > 0);
+    const summaryText = document.getElementById('summaryText');
+    const mistakeList = document.getElementById('mistakeList');
+    mistakeList.innerHTML = "";
+
+    if (missed.length === 0) {
+      summaryText.textContent = "Perfect run — no mistakes at all! 👏";
+    } else {
+      summaryText.textContent = "Words you struggled with:";
+      missed.forEach(([w, c]) => {
+        const li = document.createElement('li');
+        li.textContent = `${w} — missed ${c} time${c > 1 ? 's' : ''}`;
+        mistakeList.appendChild(li);
+      });
+    }
+  }
+
+  function restart() {
+    document.getElementById('setupArea').style.display = 'block';
+    document.getElementById('practiceArea').style.display = 'none';
+    document.getElementById('wordInput').style.display = 'block';
+    document.querySelector('.sound-row').style.display = 'flex';
+    document.querySelector('.btn-row').style.display = 'flex';
+    document.querySelector('.hint').style.display = 'block';
+  }
+
+  document.getElementById('wordInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') checkSpelling();
+  });
+</script>
+
+</body>
+</html>

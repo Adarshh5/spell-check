@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,16 +8,17 @@
   * { box-sizing: border-box; }
   body {
     font-family: 'Segoe UI', Arial, sans-serif;
-    background: #f4f6f8;
+    background: #121212;
+    color: #e0e0e0;
     display: flex;
     justify-content: center;
     padding: 40px 20px;
     margin: 0;
   }
   .card {
-    background: #fff;
+    background: #1e1e1e;
     border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     padding: 30px;
     width: 100%;
     max-width: 480px;
@@ -26,7 +26,7 @@
   h1 {
     font-size: 22px;
     margin-top: 0;
-    color: #222;
+    color: #ffffff;
     text-align: center;
   }
   textarea {
@@ -34,10 +34,15 @@
     height: 90px;
     padding: 10px;
     font-size: 15px;
-    border: 1px solid #ccc;
+    background-color: #2a2a2a;
+    color: #ffffff;
+    border: 1px solid #444;
     border-radius: 8px;
     resize: vertical;
     font-family: inherit;
+  }
+  textarea::placeholder {
+    color: #888;
   }
   button {
     cursor: pointer;
@@ -49,18 +54,19 @@
     transition: background 0.2s;
   }
   .primary {
-    background: #2d6cdf;
-    color: #fff;
+    background: #3b82f6;
+    color: #ffffff;
     width: 100%;
     margin-top: 12px;
     padding: 12px;
   }
-  .primary:hover { background: #1f56b8; }
+  .primary:hover { background: #2563eb; }
   .secondary {
-    background: #eef1f5;
-    color: #333;
+    background: #2a2a2a;
+    color: #e0e0e0;
+    border: 1px solid #444;
   }
-  .secondary:hover { background: #dde2e8; }
+  .secondary:hover { background: #3a3a3a; }
   #practiceArea { display: none; margin-top: 10px; }
   .sound-row {
     display: flex;
@@ -68,8 +74,8 @@
     margin: 20px 0;
   }
   .sound-btn {
-    background: #2d6cdf;
-    color: #fff;
+    background: #3b82f6;
+    color: #ffffff;
     font-size: 26px;
     width: 70px;
     height: 70px;
@@ -78,17 +84,19 @@
     align-items: center;
     justify-content: center;
   }
-  .sound-btn:hover { background: #1f56b8; }
+  .sound-btn:hover { background: #2563eb; }
   #wordInput {
     width: 100%;
     padding: 12px;
     font-size: 18px;
     text-align: center;
-    border: 2px solid #ccc;
+    background-color: #2a2a2a;
+    color: #ffffff;
+    border: 2px solid #444;
     border-radius: 8px;
     letter-spacing: 1px;
   }
-  #wordInput:focus { outline: none; border-color: #2d6cdf; }
+  #wordInput:focus { outline: none; border-color: #3b82f6; }
   .btn-row {
     display: flex;
     gap: 10px;
@@ -102,13 +110,13 @@
     min-height: 22px;
     font-size: 15px;
   }
-  .correct { color: #1a8f3c; }
-  .incorrect { color: #d93025; }
+  .correct { color: #4ade80; }
+  .incorrect { color: #f87171; }
   #progress {
     text-align: center;
     margin-top: 16px;
     font-size: 14px;
-    color: #555;
+    color: #aaa;
   }
   #summary {
     display: none;
@@ -117,11 +125,11 @@
   #summary ul {
     padding-left: 20px;
     font-size: 14px;
-    color: #444;
+    color: #ccc;
   }
   .hint {
     font-size: 13px;
-    color: #888;
+    color: #777;
     text-align: center;
     margin-top: 6px;
   }
@@ -133,7 +141,7 @@
   <h1>🔤 Spelling Practice</h1>
 
   <div id="setupArea">
-    <p style="font-size:14px; color:#666;">Paste your words below, separated by commas:</p>
+    <p style="font-size:14px; color:#aaa;">Paste your words below, separated by commas:</p>
     <textarea id="wordListInput" placeholder="variety, nervous, inequality, January, excitement"></textarea>
     <button class="primary" onclick="startPractice()">Start Practice</button>
   </div>
@@ -220,7 +228,7 @@
     window.speechSynthesis.speak(utterance);
   }
 
-function checkSpelling() {
+  function checkSpelling() {
     const typed = document.getElementById('wordInput').value.trim().toLowerCase();
     const correct = currentWord.trim().toLowerCase();
     const feedback = document.getElementById('feedback');
@@ -238,14 +246,13 @@ function checkSpelling() {
       feedback.className = "incorrect";
       mistakeCounts[correct] = (mistakeCounts[correct] || 0) + 1;
 
-      // move the word to a random spot further in the queue (not immediately next)
       const wrongWord = queue.shift();
       const insertPos = queue.length === 0 ? 0 : Math.floor(Math.random() * queue.length) + 1;
       queue.splice(insertPos, 0, wrongWord);
 
       setTimeout(nextWord, 1500);
     }
-}
+  }
 
   function updateProgress() {
     document.getElementById('progress').textContent =

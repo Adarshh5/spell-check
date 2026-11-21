@@ -1,305 +1,289 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Spelling Practice</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Speaking Test Practice</title>
 <style>
-  * { box-sizing: border-box; }
-  body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: #121212;
-    color: #e0e0e0;
-    display: flex;
-    justify-content: center;
-    padding: 40px 20px;
-    margin: 0;
-  }
-  .card {
-    background: #1e1e1e;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-    padding: 30px;
-    width: 100%;
-    max-width: 480px;
-  }
-  h1 {
-    font-size: 22px;
-    margin-top: 0;
-    color: #ffffff;
-    text-align: center;
-  }
-  textarea {
-    width: 100%;
-    height: 90px;
-    padding: 10px;
-    font-size: 15px;
-    background-color: #2a2a2a;
-    color: #ffffff;
-    border: 1px solid #444;
-    border-radius: 8px;
-    resize: vertical;
-    font-family: inherit;
-  }
-  textarea::placeholder {
-    color: #888;
-  }
-  button {
-    cursor: pointer;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 16px;
-    font-size: 15px;
-    font-weight: 600;
-    transition: background 0.2s;
-  }
-  .primary {
-    background: #3b82f6;
-    color: #ffffff;
-    width: 100%;
-    margin-top: 12px;
-    padding: 12px;
-  }
-  .primary:hover { background: #2563eb; }
-  .secondary {
-    background: #2a2a2a;
-    color: #e0e0e0;
-    border: 1px solid #444;
-  }
-  .secondary:hover { background: #3a3a3a; }
-  #practiceArea { display: none; margin-top: 10px; }
-  .sound-row {
-    display: flex;
-    justify-content: center;
-    margin: 20px 0;
-  }
-  .sound-btn {
-    background: #3b82f6;
-    color: #ffffff;
-    font-size: 26px;
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .sound-btn:hover { background: #2563eb; }
-  #wordInput {
-    width: 100%;
-    padding: 12px;
-    font-size: 18px;
-    text-align: center;
-    background-color: #2a2a2a;
-    color: #ffffff;
-    border: 2px solid #444;
-    border-radius: 8px;
-    letter-spacing: 1px;
-  }
-  #wordInput:focus { outline: none; border-color: #3b82f6; }
-  .btn-row {
-    display: flex;
-    gap: 10px;
-    margin-top: 12px;
-  }
-  .btn-row button { flex: 1; }
-  #feedback {
-    text-align: center;
-    font-weight: 600;
-    margin-top: 14px;
-    min-height: 22px;
-    font-size: 15px;
-  }
-  .correct { color: #4ade80; }
-  .incorrect { color: #f87171; }
-  #progress {
-    text-align: center;
-    margin-top: 16px;
-    font-size: 14px;
-    color: #aaa;
-  }
-  #summary {
-    display: none;
-    margin-top: 10px;
-  }
-  #summary ul {
-    padding-left: 20px;
-    font-size: 14px;
-    color: #ccc;
-  }
-  .hint {
-    font-size: 13px;
-    color: #777;
-    text-align: center;
-    margin-top: 6px;
-  }
+:root{--bg:#eef2f5;--card:#fff;--ink:#14212b;--muted:#5d6b76;--line:#d3dce3;--accent:#0b6e6e;--accent-ink:#fff;--rec:#c0392b;--warn-bg:#fdecea;--warn-ink:#8a1f14}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Trebuchet MS","Segoe UI",system-ui,sans-serif;min-height:100vh;display:flex;justify-content:center;padding:24px 16px}
+main{width:100%;max-width:720px}
+h1{font-size:1.7rem;margin:0 0 4px;letter-spacing:-.01em}
+.sub{color:var(--muted);margin:0 0 20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:16px}
+label{display:block;font-weight:600;margin:0 0 6px}
+.field{margin-bottom:16px}
+.hint{font-weight:400;color:var(--muted);font-size:.9rem}
+textarea,select,input[type=number]{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font:inherit;background:#fff;color:var(--ink)}
+textarea{min-height:170px;font-family:Consolas,"Courier New",monospace;font-size:.9rem;resize:vertical}
+.row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:560px){.row{grid-template-columns:1fr}}
+button{font:inherit;font-weight:700;border:0;border-radius:8px;padding:12px 22px;cursor:pointer;background:var(--accent);color:var(--accent-ink)}
+button.ghost{background:transparent;color:var(--accent);border:2px solid var(--accent)}
+button:focus-visible,textarea:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #f2b705;outline-offset:2px}
+#err{display:none;background:var(--warn-bg);color:var(--warn-ink);border-radius:8px;padding:10px 12px;margin-bottom:14px}
+.hidden{display:none!important}
+#test{text-align:center;padding:32px 20px}
+#prog{color:var(--muted);margin-bottom:18px}
+#state{font-size:1.25rem;font-weight:700;margin:14px 0 6px;min-height:1.9em}
+.orb{width:96px;height:96px;border-radius:50%;margin:0 auto;display:grid;place-items:center;background:#dcecec;color:var(--accent)}
+.orb svg{width:44px;height:44px}
+.orb.speak{animation:pulse 1.1s ease-in-out infinite}
+.orb.rec{background:#fbe3e0;color:var(--rec);animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.1)}}
+@media(prefers-reduced-motion:reduce){.orb{animation:none!important}}
+#timerBox{margin:16px auto 0;max-width:360px}
+#time{font-size:2.4rem;font-weight:700;font-variant-numeric:tabular-nums}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin-top:6px}
+#fill{height:100%;width:100%;background:var(--rec);transition:width .1s linear}
+#stop{background:var(--rec);margin-top:18px;font-size:1.1rem;padding:14px 34px}
+#end{margin-top:26px}
+.res{border-left:4px solid var(--accent)}
+.res h3{margin:0 0 8px;font-size:1.05rem}
+.res .ans{background:#f5f8fa;border-radius:8px;padding:10px;margin:8px 0;white-space:pre-wrap}
+.res .none{color:var(--muted);font-style:italic}
+audio{width:100%;margin-top:6px}
+.note{color:var(--muted);font-size:.9rem}
 </style>
 </head>
 <body>
+<main>
+<h1>Speaking test practice</h1>
+<p class="sub">Short Answer and Open Questions rounds. Questions are spoken aloud only. Use Chrome.</p>
 
-<div class="card">
-  <h1>🔤 Spelling Practice</h1>
-
-  <div id="setupArea">
-    <p style="font-size:14px; color:#aaa;">Paste your words below, separated by commas:</p>
-    <textarea id="wordListInput" placeholder="variety, nervous, inequality, January, excitement"></textarea>
-    <button class="primary" onclick="startPractice()">Start Practice</button>
+<!-- SETUP -->
+<section id="setup" class="card">
+  <div id="err" role="alert"></div>
+  <div class="field">
+    <label for="json">1. Paste your questions <span class="hint">(JSON)</span></label>
+    <textarea id="json" spellcheck="false" placeholder='[
+  {"number": 1, "question": "Describe your typical morning routine."},
+  {"number": 2, "question": "What is your favorite food, and why do you like it?"}
+]'></textarea>
   </div>
-
-  <div id="practiceArea">
-    <div class="sound-row">
-      <button class="sound-btn" onclick="speakCurrentWord()">🔊</button>
-    </div>
-    <input type="text" id="wordInput" placeholder="Type the word here" autocomplete="off" spellcheck="false">
-    <div class="btn-row">
-      <button class="secondary" onclick="speakCurrentWord()">Replay sound</button>
-      <button class="primary" onclick="checkSpelling()">Check</button>
-    </div>
-    <div id="feedback"></div>
-    <div id="progress"></div>
-    <div class="hint">Press Enter to submit • upper/lower case doesn't matter</div>
-    <button class="secondary" style="width:100%; margin-top:16px;" onclick="restart()">Restart</button>
-
-    <div id="summary">
-      <h3 style="font-size:16px;">🎉 All done!</h3>
-      <p id="summaryText" style="font-size:14px;"></p>
-      <ul id="mistakeList"></ul>
-    </div>
+  <div class="row">
+    <div class="field"><label for="round">2. Round</label>
+      <select id="round"><option value="short">Short Answer (15 s)</option><option value="open">Open Questions (40 s)</option></select></div>
+    <div class="field"><label for="count">3. How many questions</label>
+      <select id="count"></select></div>
+    <div class="field"><label for="start">4. Start from number</label>
+      <input type="number" id="start" min="1" max="99" value="1"></div>
   </div>
-</div>
+  <button id="go">Start test</button>
+  <p class="note" id="support"></p>
+</section>
+
+<!-- TEST -->
+<section id="test" class="card hidden">
+  <div id="prog"></div>
+  <div class="orb" id="orb" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="currentColor" id="icon"></svg>
+  </div>
+  <div id="state" aria-live="polite"></div>
+  <div id="timerBox" class="hidden">
+    <div id="time">0</div>
+    <div class="bar"><div id="fill"></div></div>
+    <button id="stop">Stop — I'm done answering</button>
+  </div>
+  <div><button id="end" class="ghost">End test early</button></div>
+</section>
+
+<!-- RESULTS -->
+<section id="results" class="hidden">
+  <div class="card">
+    <h2 style="margin:0 0 4px">Your results</h2>
+    <p class="note" style="margin:0">Transcripts come from browser speech recognition and may contain mistakes. Play the recording to check.</p>
+  </div>
+  <div id="list"></div>
+  <button id="restart">Restart test</button>
+</section>
+</main>
 
 <script>
-  let queue = [];
-  let totalWords = 0;
-  let correctCount = 0;
-  let mistakeCounts = {};
-  let currentWord = "";
+const $ = id => document.getElementById(id);
+const LIMITS = {short: 15, open: 40};
+const ICON_SPEAKER = '<path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/>';
+const ICON_MIC = '<path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-3.1A7 7 0 0 0 19 11h-2z"/>';
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-  function shuffle(arr) {
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
-  }
+let stream = null, runId = 0, results = [], urls = [], currentFinish = null;
 
-  function startPractice() {
-    const raw = document.getElementById('wordListInput').value;
-    const words = raw.split(',')
-      .map(w => w.trim())
-      .filter(w => w.length > 0);
+// ---- setup helpers ----
+for (let i = 1; i <= 10; i++) $('count').add(new Option(i, i));
+$('count').value = 5;
+$('support').textContent = SR ? '' :
+  'Speech-to-text is not available in this browser, so only your audio will be recorded. Use Chrome for transcripts.';
 
-    if (words.length === 0) {
-      alert("Please enter at least one word.");
-      return;
-    }
+function showErr(msg){ const e = $('err'); e.textContent = msg; e.style.display = 'block'; e.scrollIntoView({block:'nearest'}); }
+function clearErr(){ $('err').style.display = 'none'; }
+function show(id){ ['setup','test','results'].forEach(s => $(s).classList.toggle('hidden', s !== id)); window.scrollTo(0,0); }
 
-    queue = shuffle([...words]);
-    totalWords = words.length;
-    correctCount = 0;
-    mistakeCounts = {};
-    words.forEach(w => mistakeCounts[w.toLowerCase()] = 0);
-
-    document.getElementById('setupArea').style.display = 'none';
-    document.getElementById('practiceArea').style.display = 'block';
-    document.getElementById('summary').style.display = 'none';
-
-    nextWord();
-  }
-
-  function nextWord() {
-    if (queue.length === 0) {
-      finishPractice();
-      return;
-    }
-    currentWord = queue[0];
-    document.getElementById('wordInput').value = "";
-    document.getElementById('feedback').textContent = "";
-    updateProgress();
-    document.getElementById('wordInput').focus();
-    speakCurrentWord();
-  }
-
-  function speakCurrentWord() {
-    if (!currentWord) return;
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(currentWord);
-    utterance.rate = 0.9;
-    window.speechSynthesis.speak(utterance);
-  }
-
-  function checkSpelling() {
-    const typed = document.getElementById('wordInput').value.trim().toLowerCase();
-    const correct = currentWord.trim().toLowerCase();
-    const feedback = document.getElementById('feedback');
-
-    if (typed === "") return;
-
-    if (typed === correct) {
-      feedback.textContent = "✅ Correct!";
-      feedback.className = "correct";
-      queue.shift();
-      correctCount++;
-      setTimeout(nextWord, 700);
-    } else {
-      feedback.textContent = `❌ Not quite — the correct spelling is "${currentWord}"`;
-      feedback.className = "incorrect";
-      mistakeCounts[correct] = (mistakeCounts[correct] || 0) + 1;
-
-      const wrongWord = queue.shift();
-      const insertPos = queue.length === 0 ? 0 : Math.floor(Math.random() * queue.length) + 1;
-      queue.splice(insertPos, 0, wrongWord);
-
-      setTimeout(nextWord, 1500);
-    }
-  }
-
-  function updateProgress() {
-    document.getElementById('progress').textContent =
-      `Correct: ${correctCount} / ${totalWords}   •   Remaining: ${queue.length}`;
-  }
-
-  function finishPractice() {
-    document.getElementById('progress').textContent = `Correct: ${correctCount} / ${totalWords}`;
-    document.getElementById('wordInput').style.display = 'none';
-    document.querySelector('.sound-row').style.display = 'none';
-    document.querySelector('.btn-row').style.display = 'none';
-    document.querySelector('.hint').style.display = 'none';
-    document.getElementById('feedback').textContent = "";
-
-    const summary = document.getElementById('summary');
-    summary.style.display = 'block';
-
-    const missed = Object.entries(mistakeCounts).filter(([w, c]) => c > 0);
-    const summaryText = document.getElementById('summaryText');
-    const mistakeList = document.getElementById('mistakeList');
-    mistakeList.innerHTML = "";
-
-    if (missed.length === 0) {
-      summaryText.textContent = "Perfect run — no mistakes at all! 👏";
-    } else {
-      summaryText.textContent = "Words you struggled with:";
-      missed.forEach(([w, c]) => {
-        const li = document.createElement('li');
-        li.textContent = `${w} — missed ${c} time${c > 1 ? 's' : ''}`;
-        mistakeList.appendChild(li);
-      });
-    }
-  }
-
-  function restart() {
-    document.getElementById('setupArea').style.display = 'block';
-    document.getElementById('practiceArea').style.display = 'none';
-    document.getElementById('wordInput').style.display = 'block';
-    document.querySelector('.sound-row').style.display = 'flex';
-    document.querySelector('.btn-row').style.display = 'flex';
-    document.querySelector('.hint').style.display = 'block';
-  }
-
-  document.getElementById('wordInput').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') checkSpelling();
+function parseQuestions(){
+  const raw = $('json').value.trim();
+  if (!raw) throw new Error('Paste your questions in the box first.');
+  let data;
+  try { data = JSON.parse(raw); }
+  catch (e) { throw new Error('The JSON is not valid: ' + e.message + '. Check for missing commas, quotes or brackets, and remove any "...." lines.'); }
+  if (!Array.isArray(data) || !data.length) throw new Error('The JSON must be a list like [{"number": 1, "question": "..."}].');
+  data.forEach((q, i) => {
+    if (!q || typeof q !== 'object' || !Number.isFinite(Number(q.number)) || typeof q.question !== 'string' || !q.question.trim())
+      throw new Error('Item ' + (i + 1) + ' needs a "number" and a non-empty "question".');
   });
-</script>
+  return data.map(q => ({number: Number(q.number), question: q.question.trim()})).sort((a, b) => a.number - b.number);
+}
 
+// ---- timing / speech helpers ----
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function pickVoice(){
+  const v = speechSynthesis.getVoices();
+  return v.find(x => /^en-US/i.test(x.lang) && /Google/i.test(x.name)) || v.find(x => /^en/i.test(x.lang)) || null;
+}
+function speak(text){
+  return new Promise(resolve => {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US'; u.rate = 1; u.pitch = 1;
+    const v = pickVoice(); if (v) u.voice = v;
+    window._utt = u; // keep a reference so Chrome does not garbage-collect it
+    let done = false; const fin = () => { if (!done) { done = true; resolve(); } };
+    u.onend = fin; u.onerror = fin;
+    // safety net in case Chrome never fires onend
+    setTimeout(fin, Math.max(8000, text.length * 120));
+    speechSynthesis.speak(u);
+  });
+}
+if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = () => {};
+
+// Records audio and transcript until time runs out, Stop is pressed, or the run is cancelled.
+function recordAnswer(seconds, id){
+  return new Promise(resolve => {
+    const chunks = [];
+    const mr = new MediaRecorder(stream);
+    let base = '', cur = '', active = true, rec = null, pending = 1, settled = false, tick = null;
+
+    const settle = () => {
+      if (settled) return; settled = true;
+      const text = (base + cur).replace(/\s+/g, ' ').trim();
+      resolve({blob: new Blob(chunks, {type: mr.mimeType || 'audio/webm'}), text});
+    };
+    const part = () => { if (--pending <= 0) settle(); };
+
+    mr.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+    mr.onstop = part;
+
+    if (SR) {
+      try {
+        rec = new SR(); rec.lang = 'en-US'; rec.continuous = true; rec.interimResults = true;
+        rec.onresult = e => { let t = ''; for (let i = 0; i < e.results.length; i++) t += e.results[i][0].transcript + ' '; cur = t; };
+        rec.onend = () => {
+          base += cur + ' '; cur = '';
+          if (active) { try { rec.start(); } catch (_) { part(); } } else part();
+        };
+        rec.onerror = () => {}; // onend still follows
+        pending = 2;
+        rec.start();
+      } catch (_) { rec = null; pending = 1; }
+    }
+    mr.start();
+
+    const finish = () => {
+      if (!active) return; active = false;
+      clearInterval(tick); currentFinish = null;
+      try { if (mr.state !== 'inactive') mr.stop(); } catch (_) { part(); }
+      if (rec) { try { rec.stop(); } catch (_) { part(); } }
+      setTimeout(settle, 2000); // never hang waiting for the recognizer
+    };
+    currentFinish = finish;
+    $('stop').onclick = finish;
+
+    const t0 = Date.now();
+    $('time').textContent = seconds;
+    $('fill').style.width = '100%';
+    tick = setInterval(() => {
+      if (id !== runId) return finish();
+      const left = seconds - (Date.now() - t0) / 1000;
+      $('time').textContent = Math.max(0, Math.ceil(left));
+      $('fill').style.width = Math.max(0, left / seconds * 100) + '%';
+      if (left <= 0) finish();
+    }, 100);
+  });
+}
+
+// ---- main test loop ----
+async function startTest(){
+  clearErr();
+  let qs;
+  try { qs = parseQuestions(); } catch (e) { return showErr(e.message); }
+
+  const round = $('round').value, count = +$('count').value, startNum = +$('start').value;
+  if (!Number.isInteger(startNum) || startNum < 1 || startNum > 99) return showErr('Start number must be a whole number from 1 to 99.');
+  const pool = qs.filter(q => q.number >= startNum);
+  if (!pool.length) return showErr('No question has number ' + startNum + ' or higher. Your list goes up to ' + qs[qs.length - 1].number + '.');
+  if (pool.length < count) return showErr('Starting from ' + startNum + ' there are only ' + pool.length + ' questions, but you asked for ' + count + '. Lower the count or the start number.');
+  if (!window.MediaRecorder || !navigator.mediaDevices) return showErr('This browser cannot record audio. Please use Chrome.');
+  if (!window.speechSynthesis) return showErr('This browser cannot speak aloud. Please use Chrome.');
+
+  try { stream = await navigator.mediaDevices.getUserMedia({audio: true}); }
+  catch (e) { return showErr('Microphone access was blocked. Click the lock icon in the address bar, allow the microphone, then try again.'); }
+
+  const id = ++runId, items = pool.slice(0, count), limit = LIMITS[round];
+  results = [];
+  show('test');
+
+  for (let i = 0; i < items.length; i++) {
+    if (id !== runId) return;
+    const q = items[i];
+    $('prog').textContent = 'Question ' + (i + 1) + ' of ' + items.length;
+    $('timerBox').classList.add('hidden');
+    $('orb').className = 'orb speak'; $('icon').innerHTML = ICON_SPEAKER;
+    $('state').textContent = 'Listen to the question';
+    await speak(q.question);
+    if (id !== runId) return;
+
+    $('orb').className = 'orb rec'; $('icon').innerHTML = ICON_MIC;
+    $('state').textContent = 'Speak now — recording';
+    $('timerBox').classList.remove('hidden');
+    const ans = await recordAnswer(limit, id);
+    if (id !== runId) return;
+    $('timerBox').classList.add('hidden');
+    results.push({number: q.number, question: q.question, text: ans.text, blob: ans.blob});
+
+    if (i < items.length - 1) {
+      $('orb').className = 'orb'; $('icon').innerHTML = ICON_SPEAKER;
+      for (let s = 3; s > 0; s--) {
+        $('state').textContent = 'Next question in ' + s + '…';
+        await sleep(1000);
+        if (id !== runId) return;
+      }
+    }
+  }
+  showResults();
+}
+
+function showResults(){
+  runId++; // cancels any running loop
+  speechSynthesis.cancel();
+  if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+  urls.forEach(u => URL.revokeObjectURL(u)); urls = [];
+  const list = $('list'); list.innerHTML = '';
+  if (!results.length) list.innerHTML = '<div class="card">No answers were recorded.</div>';
+  results.forEach(r => {
+    const d = document.createElement('div'); d.className = 'card res';
+    const h = document.createElement('h3'); h.textContent = 'Q' + r.number + '. ' + r.question;
+    const a = document.createElement('div'); a.className = 'ans';
+    if (r.text) a.textContent = r.text; else { a.textContent = 'No speech was detected in the transcript.'; a.classList.add('none'); }
+    const au = document.createElement('audio'); au.controls = true;
+    const u = URL.createObjectURL(r.blob); urls.push(u); au.src = u;
+    d.append(h, a, au); list.append(d);
+  });
+  show('results');
+}
+
+$('go').onclick = startTest;
+$('end').onclick = () => { const f = currentFinish; runId++; if (f) f(); showResults(); };
+$('restart').onclick = () => { runId++; results = []; clearErr(); show('setup'); };
+</script>
 </body>
 </html>

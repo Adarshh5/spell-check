@@ -17,7 +17,7 @@ label{display:block;font-weight:600;margin:0 0 6px}
 .hint{font-weight:400;color:var(--muted);font-size:.9rem}
 textarea,select,input[type=number]{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font:inherit;background:#fff;color:var(--ink)}
 textarea{min-height:170px;font-family:Consolas,"Courier New",monospace;font-size:.9rem;resize:vertical}
-.row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.row{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 @media(max-width:560px){.row{grid-template-columns:1fr}}
 button{font:inherit;font-weight:700;border:0;border-radius:8px;padding:12px 22px;cursor:pointer;background:var(--accent);color:var(--accent-ink)}
 button.ghost{background:transparent;color:var(--accent);border:2px solid var(--accent)}
@@ -50,7 +50,7 @@ audio{width:100%;margin-top:6px}
 <body>
 <main>
 <h1>Speaking test practice</h1>
-<p class="sub">Short Answer and Open Questions rounds. Questions are spoken aloud only. Use Chrome.</p>
+<p class="sub">Open Questions round. Each question is spoken twice, aloud only. You get 40 seconds to answer. Use Chrome.</p>
 
 <!-- SETUP -->
 <section id="setup" class="card">
@@ -63,11 +63,9 @@ audio{width:100%;margin-top:6px}
 ]'></textarea>
   </div>
   <div class="row">
-    <div class="field"><label for="round">2. Round</label>
-      <select id="round"><option value="short">Short Answer (15 s)</option><option value="open">Open Questions (40 s)</option></select></div>
-    <div class="field"><label for="count">3. How many questions</label>
+    <div class="field"><label for="count">2. How many questions</label>
       <select id="count"></select></div>
-    <div class="field"><label for="start">4. Start from number</label>
+    <div class="field"><label for="start">3. Start from number</label>
       <input type="number" id="start" min="1" max="99" value="1"></div>
   </div>
   <button id="go">Start test</button>
@@ -102,7 +100,9 @@ audio{width:100%;margin-top:6px}
 
 <script>
 const $ = id => document.getElementById(id);
-const LIMITS = {short: 15, open: 40};
+const LIMIT = 40;          // seconds to answer
+const REPEATS = 2;         // times each question is spoken
+const GAP_BETWEEN_READS = 2000; // ms pause between the two readings
 const ICON_SPEAKER = '<path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/>';
 const ICON_MIC = '<path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-3.1A7 7 0 0 0 19 11h-2z"/>';
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -217,7 +217,7 @@ async function startTest(){
   let qs;
   try { qs = parseQuestions(); } catch (e) { return showErr(e.message); }
 
-  const round = $('round').value, count = +$('count').value, startNum = +$('start').value;
+  const count = +$('count').value, startNum = +$('start').value;
   if (!Number.isInteger(startNum) || startNum < 1 || startNum > 99) return showErr('Start number must be a whole number from 1 to 99.');
   const pool = qs.filter(q => q.number >= startNum);
   if (!pool.length) return showErr('No question has number ' + startNum + ' or higher. Your list goes up to ' + qs[qs.length - 1].number + '.');
@@ -228,7 +228,7 @@ async function startTest(){
   try { stream = await navigator.mediaDevices.getUserMedia({audio: true}); }
   catch (e) { return showErr('Microphone access was blocked. Click the lock icon in the address bar, allow the microphone, then try again.'); }
 
-  const id = ++runId, items = pool.slice(0, count), limit = LIMITS[round];
+  const id = ++runId, items = pool.slice(0, count), limit = LIMIT;
   results = [];
   show('test');
 
@@ -238,9 +238,17 @@ async function startTest(){
     $('prog').textContent = 'Question ' + (i + 1) + ' of ' + items.length;
     $('timerBox').classList.add('hidden');
     $('orb').className = 'orb speak'; $('icon').innerHTML = ICON_SPEAKER;
-    $('state').textContent = 'Listen to the question';
-    await speak(q.question);
-    if (id !== runId) return;
+    for (let r = 1; r <= REPEATS; r++) {
+      $('orb').className = 'orb speak'; $('icon').innerHTML = ICON_SPEAKER;
+      $('state').textContent = 'Listen to the question (' + r + ' of ' + REPEATS + ')';
+      await speak(q.question);
+      if (id !== runId) return;
+      if (r < REPEATS) {
+        $('orb').className = 'orb';
+        await sleep(GAP_BETWEEN_READS);
+        if (id !== runId) return;
+      }
+    }
 
     $('orb').className = 'orb rec'; $('icon').innerHTML = ICON_MIC;
     $('state').textContent = 'Speak now — recording';

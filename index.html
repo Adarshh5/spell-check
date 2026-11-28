@@ -102,7 +102,7 @@ audio{width:100%;margin-top:6px}
 const $ = id => document.getElementById(id);
 const LIMIT = 40;          // seconds to answer
 const REPEATS = 2;         // times each question is spoken
-const GAP_BETWEEN_READS = 2000; // ms pause between the two readings
+const GAP_BETWEEN_READS = 1000; // ms pause between the two readings
 const ICON_SPEAKER = '<path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/>';
 const ICON_MIC = '<path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-3.1A7 7 0 0 0 19 11h-2z"/>';
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
